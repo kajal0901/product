@@ -21,75 +21,70 @@ $router->group(
         'prefix' => 'api',
     ],
     function ($router) {
-        /**
-         * Guest Routes
-         */
-        $router->group(
-            [
-                'prefix' => 'api',
-            ],
-            function ($router) {
-                $router->post(
-                    '/register', [
-                        'as' => 'auth.register',
-                        'uses' => 'AuthController@register',
-                    ]
-                );
-
-                $router->post(
-                    '/login', [
-                        'as' => 'auth.login',
-                        'uses' => 'AuthController@login',
-                    ]
-                );
-            }
+        $router->post(
+            '/register', [
+                'as' => 'auth.register',
+                'uses' => 'AuthController@register',
+            ]
         );
 
-        $router->group(
-            [
-                'prefix' => 'products',
-            ],
-            function ($router) {
-                $router->get(
-                    '/', [
-                        'as' => 'products.index',
-                        'uses' => 'ProductController@index',
-                    ]
-                );
-
-                // Store product
-                $router->post(
-                    '/', [
-                        'as' => 'products.store',
-                        'uses' => 'ProductController@create',
-                    ]
-                );
-
-                //product details
-                $router->get(
-                    '/detail', [
-                        'as' => 'products.show',
-                        'uses' => 'ProductController@show',
-                    ]
-                );
-                // Update Product
-                $router->put(
-                    '/',
-                    [
-                        'as' => 'products.update',
-                        'uses' => 'ProductController@update',
-                    ]
-                );
-
-                // Delete product table data
-                $router->delete(
-                    '/',
-                    [
-                        'as' => 'products.delete',
-                        'uses' => 'ProductController@destroy',
-                    ]
-                );
-            }
+        $router->post(
+            '/login', [
+                'as' => 'auth.login',
+                'uses' => 'AuthController@login',
+            ]
         );
-    });
+        $router->get(
+            '/products', [
+                'as' => 'products.index',
+                'uses' => 'ProductController@index',
+            ]
+        );
+
+        // Store product
+        $router->post(
+            '/products', [
+                'as' => 'products.store',
+                'uses' => 'ProductController@create',
+            ]
+        );
+
+        //product details
+        $router->get(
+            '/products/{id}', [
+                'as' => 'products.show',
+                'uses' => 'ProductController@show',
+            ]
+        );
+        // Update Product
+        $router->put(
+            '/products',
+            [
+                'as' => 'products.update',
+                'uses' => 'ProductController@update',
+            ]
+        );
+
+        // Delete product table data
+        $router->delete(
+            '/products',
+            [
+                'as' => 'products.delete',
+                'uses' => 'ProductController@destroy',
+            ]
+        );
+
+        // search Api by Price
+        $router->get(
+            '/products',
+            [
+                'as' => 'products.search',
+                'uses' => 'ProductController@filter',
+            ]
+        );
+    }
+
+);
+
+
 
