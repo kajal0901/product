@@ -3,11 +3,11 @@
 namespace App\Repositories\Auth;
 
 
-use App\Product;
+use App\Cart;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 
-class ProductRepository
+class CartRepository
 {
 
     /**
@@ -18,15 +18,16 @@ class ProductRepository
     /**
      * @param array $input
      *
-     * @return Product
+     * @return Cart
      */
-    public function create(array $input): Product
+    public function create(array $input): Cart
     {
-        return Product::create(
+
+        return Cart::create(
             [
                 'name' => $input['name'],
-                'price' => $input['price'],
-                'description' => $input['description'],
+                'quantity' => $input['quantity'],
+                'product_id' => $input['product_id'],
             ]
         );
     }
@@ -56,7 +57,7 @@ class ProductRepository
      */
     public function show(int $id)
     {
-        return $product = Product::findOrFail($id);
+        return $product = Cart::findOrFail($id);
 
     }
 
@@ -65,9 +66,9 @@ class ProductRepository
      *
      * @return mixed
      */
-    public function deleteProduct(array $input)
+    public function deleteCart(array $input)
     {
-        $product = Product::findOrFail($input['id']);
+        $product = Cart::findOrFail($input['id']);
         return $product->delete();
     }
 

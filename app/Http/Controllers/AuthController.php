@@ -30,19 +30,25 @@ class AuthController extends Controller
      * @param Request $request
      *
      * @return JsonResponse
-     * @throws ValidationException
+     * @throws Exception
      */
     public function register(Request $request)
     {
-        $this->validate($request, $this->getValidationMethod());
+
+        $this->validate($request, [$this->getValidationMethod()]);
 
         $input = $request->only('name', 'email', 'password');
         try {
             $oUser = $this->authRepository->create($input);
-            return response()->json(['user' => $oUser, 'message' => 'Registration Complected']);
+            return $this->httpOk([
+                'message' => __('Registration Complected'),
+                'data' => [
+                    'user' => $oUser,
+                ],
+            ]);
         } catch (Exception $e) {
             //return error message
-            return response()->json(['message' => 'User Registration Failed!']);
+            throw $e;
         }
     }
 
@@ -68,12 +74,16 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $this->validate($request, $this->getValidationMethodLogin());
-        $input = $this->validate($request, config('validation-rules.login'));
-        if (!$token = Auth::attempt($input)) {
+        $this->validate($request, [$this->getValidationMethodLogin()]);
+
+        $credentials = $request->only(['email', 'password']);
+
+        if (!$token = Auth::attempt($credentials)) {
             return response()->json(['message' => 'Unauthorized']);
         }
+
         return $this->respondWithToken($token);
+
     }
 
     /**
@@ -81,6 +91,7 @@ class AuthController extends Controller
      */
     protected function getValidationMethodLogin(): array
     {
+
         return [
             'email' => 'required|string',
             'password' => 'required|string',

@@ -82,6 +82,33 @@ $router->group(
                 'uses' => 'ProductController@filter',
             ]
         );
+
+        // search Api by Price
+        $router->post(
+            '/carts',
+            [
+                'as' => 'carts.create',
+                'uses' => 'CartController@store',
+            ]
+        );
+
+        // empty cart
+        $router->post(
+            '/carts',
+            [
+                'as' => 'carts.empty',
+                'uses' => 'CartController@destroy',
+            ]
+        );
+
+        // Cart  Update
+        $router->put(
+            '/carts',
+            [
+                'as' => 'carts.update',
+                'uses' => 'CartController@update',
+            ]
+        );
     }
 
 );

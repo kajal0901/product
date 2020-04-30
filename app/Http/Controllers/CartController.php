@@ -2,30 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Cart;
 use App\Product;
-use App\Repositories\Auth\ProductRepository;
+use App\Repositories\Auth\CartRepository;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
-class ProductController extends Controller
+class CartController extends Controller
 {
 
     /**
-     * @var ProductRepository
+     * @var
      */
-    protected $productRepository;
+    protected $cartRepository;
 
     /**
-     * ProductController constructor.
+     * CartController constructor.
      *
-     * @param ProductRepository $productRepository
+     * @param CartRepository $cartRepository
      */
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(CartRepository $cartRepository)
     {
-        $this->productRepository = $productRepository;
+        $this->cartRepository = $cartRepository;
     }
 
     /**
@@ -35,7 +36,7 @@ class ProductController extends Controller
     {
         return $this->httpOk([
             'data' => [
-                'products' => $this->productRepository->getProduct(),
+                'products' => $this->cartRepository->getProduct(),
             ],
         ]);
     }
@@ -47,18 +48,18 @@ class ProductController extends Controller
      * @throws ValidationException
      * @throws Exception
      */
-    public function create(Request $request)
+    public function store(Request $request)
     {
         $this->validate($request, $this->getValidationMethod());
 
-        $input = $request->only('name', 'price', 'description');
+        $input = $request->only('name', 'quantity', 'product_id');
 
         try {
-            $oProduct = $this->productRepository->create($input);
+            $oCart = $this->cartRepository->create($input);
             return $this->httpOk([
-                'message' => ('Product Added successfully'),
+                'message' => ('Product added to cart successfully'),
                 'data' => [
-                    'product' => $oProduct,
+                    'cart' => $oCart,
                 ],
             ]);
 
@@ -75,8 +76,8 @@ class ProductController extends Controller
     {
         return [
             'name' => 'required|string',
-            'price' => 'required|integer',
-            'description' => 'required|string',
+            'quantity' => 'required|integer',
+            'product_id' => 'required|integer',
         ];
     }
 
@@ -89,7 +90,7 @@ class ProductController extends Controller
     {
         return $this->httpOk([
             'data' => [
-                'products' => $this->productRepository->show($id),
+                'carts' => $this->cartRepository->show($id),
             ],
         ]);
     }
@@ -102,19 +103,21 @@ class ProductController extends Controller
     public function update(Request $request)
     {
         $id = $request['id'];
-        $productData = Product::findOrFail($id);
+
+        $productData = Cart::findOrFail($id);
 
         $productData->name = $request->input('name');
-        $productData->price = $request->input('price');
-        $productData->description = $request->input('description');
+        $productData->quantity = $request->input('quantity');
+        $productData->product_id = $request->input('product_id');
         $productData->save();
 
         return $this->httpOk([
-            'message' => ('Product Updated'),
+            'message' => ('Cart Updated successfully'),
             'data' => [
-                'product' => $productData,
+                'cart' => $productData,
             ],
         ]);
+
     }
 
     /**
@@ -129,10 +132,10 @@ class ProductController extends Controller
 
         $input = $request->only('id');
 
-        $this->productRepository->deleteProduct($input);
+        $this->cartRepository->deleteCart($input);
 
         return $this->httpOk([
-            'message' => ('product deleted'),
+            'message' => ('Product has been removed'),
         ]);
 
     }
