@@ -75,11 +75,11 @@ $router->group(
         );
 
         // search Api by Price
-        $router->get(
+        $router->post(
             '/products',
             [
-                'as' => 'products.search',
-                'uses' => 'ProductController@filter',
+                'as' => 'curl.index',
+                'uses' => 'DataController@postRequest',
             ]
         );
 
@@ -107,6 +107,15 @@ $router->group(
             [
                 'as' => 'carts.update',
                 'uses' => 'CartController@update',
+            ]
+        );
+
+        // call curl request
+        $router->post(
+            '/curlPost',
+            [
+                'as' => 'curl.postData',
+                'uses' => 'DataController@postRequest',
             ]
         );
     }
