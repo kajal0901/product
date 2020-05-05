@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Product;
 use App\Repositories\Auth\ProductRepository;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+
 
 class ProductController extends Controller
 {
@@ -33,6 +34,11 @@ class ProductController extends Controller
      */
     public function index()
     {
+        /**
+         * sorting
+         * searching
+         * pagination
+         */
         return $this->httpOk([
             'data' => [
                 'products' => $this->productRepository->getProduct(),
@@ -41,6 +47,8 @@ class ProductController extends Controller
     }
 
     /**
+     * Method for store product Information.
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -49,26 +57,19 @@ class ProductController extends Controller
      */
     public function create(Request $request)
     {
-        $this->validate($request, $this->getValidationMethod());
-
-        $input = $request->only('name', 'price', 'description');
-
-        try {
-            $oProduct = $this->productRepository->create($input);
-            return $this->httpOk([
-                'message' => ('Product Added successfully'),
-                'data' => [
-                    'product' => $oProduct,
-                ],
-            ]);
-
-        } catch (Exception $e) {
-
-            throw $e;
-        }
+        $input = $this->validate($request, $this->getValidationMethod());
+        $oProduct = $this->productRepository->create($input);
+        return $this->httpOk([
+            'message' => ('Product Added successfully'),
+            'data' => [
+                'product' => new ProductResource($oProduct),
+            ],
+        ]);
     }
 
     /**
+     * validation method for product create
+     *
      * @return array|string[]
      */
     protected function getValidationMethod(): array
@@ -81,6 +82,8 @@ class ProductController extends Controller
     }
 
     /**
+     * method for get product data.
+     *
      * @param int $id
      *
      * @return JsonResponse
@@ -89,77 +92,81 @@ class ProductController extends Controller
     {
         return $this->httpOk([
             'data' => [
-                'products' => $this->productRepository->show($id),
+                'products' => new ProductResource(
+                    $this->productRepository->show($id)
+                ),
             ],
         ]);
     }
 
     /**
-     * @param Request $request
+     * handle request for update product data.
      *
-     * @return JsonResponse
-     */
-    public function update(Request $request)
-    {
-        $id = $request['id'];
-        $productData = Product::findOrFail($id);
-
-        $productData->name = $request->input('name');
-        $productData->price = $request->input('price');
-        $productData->description = $request->input('description');
-        $productData->save();
-
-        return $this->httpOk([
-            'message' => ('Product Updated'),
-            'data' => [
-                'product' => $productData,
-            ],
-        ]);
-    }
-
-    /**
      * @param Request $request
+     * @param int     $id
      *
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function destroy(Request $request)
+    public function update(Request $request, int $id)
     {
-        $this->validate($request, $this->getValidationProductDelete());
-
-        $input = $request->only('id');
-
-        $this->productRepository->deleteProduct($input);
-
+        $input = $this->validate($request, $this->getUpdateMethodValidation());
         return $this->httpOk([
-            'message' => ('product deleted'),
+            'message' => ('Product Updated'),
+            'data' => ['user' => new ProductResource(
+                $this->productRepository->update(
+                    $id,
+                    $input
+                )
+            ),
+            ],
         ]);
-
     }
 
     /**
+     * validation method for update product
+     *
      * @return array|string[]
      */
-    protected function getValidationProductDelete(): array
+    protected function getUpdateMethodValidation(): array
     {
         return [
-            'id' => 'required|integer',
+            'name' => 'sometimes|string',
+            'price' => 'sometimes|integer',
+            'description' => 'sometimes|integer',
         ];
     }
 
     /**
-     * @param Request $request
-     * @param Product $product
+     * Method for product delete data.
      *
-     * @return Product[]|Collection
+     * @param int $id
+     *
+     * @return JsonResponse
      */
-    public function filter(Request $request, Product $product)
+    public function destroy(int $id)
     {
-        // Search by Product Name
-        if ($request->has('price')) {
-            return $product->where('price', $request->input('price'))->get();
-        }
+        $this->productRepository->deleteProduct($id);
+        return $this->httpOk([
+            'message' => ('product deleted successfully'),
+            'data' => 'true',
+        ]);
+    }
 
-        return Product::all();
+
+    /**
+     * Filter method for product field
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
+    public function filter(Request $request)
+    {
+        return Product::when($request->has('price'), function ($q) {
+            return $q->where('price', request('price'))->get();
+        })->when($request->has('description'), function ($q) {
+            return $q->where('description', request('description'))->get();
+        });
     }
 }

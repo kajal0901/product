@@ -2,18 +2,11 @@
 
 namespace App\Repositories\Auth;
 
-
 use App\Product;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 
 class ProductRepository
 {
-
-    /**
-     * @var Model
-     */
-    protected $model;
 
     /**
      * @param array $input
@@ -36,17 +29,21 @@ class ProductRepository
      */
     public function getProduct()
     {
-        return $products = Product::paginate(5);
+        return Product::paginate(5);
     }
 
     /**
-     * @param array $input \
+     * @param int   $id
+     * @param array $input
+     *
+     * @return JsonResponse
      */
-    public function update(array $input)
+    public function update(int $id, array $input)
     {
-        /**
-         * Todo implement Product update code
-         */
+        $model = $this->show($id);
+        $model->fill($input);
+        $model->save();
+        return $model;
     }
 
     /**
@@ -56,19 +53,17 @@ class ProductRepository
      */
     public function show(int $id)
     {
-        return $product = Product::findOrFail($id);
-
+        return Product::findOrFail($id);
     }
 
     /**
-     * @param array $input
+     * @param int $id
      *
      * @return mixed
      */
-    public function deleteProduct(array $input)
+    public function deleteProduct(int $id)
     {
-        $product = Product::findOrFail($input['id']);
-        return $product->delete();
+        return Product::findOrFail($id)->delete();
     }
 
 }

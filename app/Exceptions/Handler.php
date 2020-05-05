@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Traits\GlobalExceptionHandler;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -16,6 +17,9 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    use GlobalExceptionHandler;
+
+    public const SHOPPING_CART = 'cart';
     /**
      * A list of the exception types that should not be reported.
      *
@@ -45,21 +49,15 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * Render an exception into an HTTP response.
-     *
      * @param Request   $request
      * @param Throwable $exception
      *
-     * @return Response|JsonResponse
-     *
-     * @throws Throwable
+     * @return JsonResponse|Response|\Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Throwable $exception)
     {
-        return response()->json([
-            'code' => Response::HTTP_UNPROCESSABLE_ENTITY,
-            'message' => $exception->getMessage(),
-        ], 422);
-
+        dd($exception);
+        $errorData = $this->getErrorData($exception);
+        return response()->json($errorData, $errorData['code']);
     }
 }

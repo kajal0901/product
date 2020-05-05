@@ -2,19 +2,11 @@
 
 namespace App\Repositories\Auth;
 
-
 use App\Cart;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 
 class CartRepository
 {
-
-    /**
-     * @var Model
-     */
-    protected $model;
-
     /**
      * @param array $input
      *
@@ -32,44 +24,39 @@ class CartRepository
         );
     }
 
-    /**
-     * @return JsonResponse
-     */
-    public function getProduct()
-    {
-        return $products = Product::paginate(5);
-    }
 
     /**
-     * @param array $input \
+     * @param int   $id
+     * @param array $input
+     *
+     * @return JsonResponse
      */
-    public function update(array $input)
+    public function update(int $id, array $input)
     {
-        /**
-         * Todo implement Product update code
-         */
+        $model = $this->show($id);
+        $model->fill($input);
+        $model->save();
+        return $model;
     }
 
     /**
      * @param int $id
      *
-     * @return JsonResponse
+     * @return mixed
      */
     public function show(int $id)
     {
         return $product = Cart::findOrFail($id);
-
     }
 
     /**
-     * @param array $input
+     * @param int $id
      *
      * @return mixed
      */
-    public function deleteCart(array $input)
+    public function deleteCart(int $id)
     {
-        $product = Cart::findOrFail($input['id']);
-        return $product->delete();
+        return Cart::findOrFail($id)->delete();
     }
 
 }

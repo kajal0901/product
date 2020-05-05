@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Repositories\Auth\AuthRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -27,6 +28,7 @@ class AuthController extends Controller
     }
 
     /**
+     * handle user registration Request.
      * @param Request $request
      *
      * @return JsonResponse
@@ -34,26 +36,20 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        $input = $this->validate($request, [$this->getValidationMethod()]);
 
-        $this->validate($request, [$this->getValidationMethod()]);
+        $oUser = $this->authRepository->create($input);
 
-        $input = $request->only('name', 'email', 'password');
-        try {
-            $oUser = $this->authRepository->create($input);
-            return $this->httpOk([
-                'message' => __('Registration Complected'),
-                'data' => [
-                    'user' => $oUser,
-                ],
-            ]);
-        } catch (Exception $e) {
-            //return error message
-            throw $e;
-        }
+        return $this->httpOk([
+            'message' => __('Registration Complected'),
+            'data' => [
+                'user' => new UserResource($oUser),
+            ],
+        ]);
     }
 
     /**
-     * Get the password reset validation rules.
+     * Get the user registration validation rule.
      *
      * @return array
      */
@@ -67,6 +63,7 @@ class AuthController extends Controller
     }
 
     /**
+     * login request method
      * @param Request $request
      *
      * @return JsonResponse
@@ -74,9 +71,7 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $this->validate($request, [$this->getValidationMethodLogin()]);
-
-        $credentials = $request->only(['email', 'password']);
+        $credentials = $this->validate($request, [$this->getValidationMethodLogin()]);
 
         if (!$token = Auth::attempt($credentials)) {
             return response()->json(['message' => 'Unauthorized']);
@@ -87,11 +82,12 @@ class AuthController extends Controller
     }
 
     /**
+     * get the user login rule.
+     *
      * @return array|string[]
      */
     protected function getValidationMethodLogin(): array
     {
-
         return [
             'email' => 'required|string',
             'password' => 'required|string',

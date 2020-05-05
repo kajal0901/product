@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Cart;
-use App\Product;
+use App\Http\Resources\CartResource;
 use App\Repositories\Auth\CartRepository;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -30,18 +28,22 @@ class CartController extends Controller
     }
 
     /**
+     * method for cart data.
+     *
      * @return JsonResponse
      */
     public function index()
     {
         return $this->httpOk([
             'data' => [
-                'products' => $this->cartRepository->getProduct(),
+                'products' => $this->cartRepository->get(),
             ],
         ]);
     }
 
     /**
+     * method for store cart data.
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -50,26 +52,20 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, $this->getValidationMethod());
+        $input = $this->validate($request, $this->getValidationMethod());
 
-        $input = $request->only('name', 'quantity', 'product_id');
-
-        try {
-            $oCart = $this->cartRepository->create($input);
-            return $this->httpOk([
-                'message' => ('Product added to cart successfully'),
-                'data' => [
-                    'cart' => $oCart,
-                ],
-            ]);
-
-        } catch (Exception $e) {
-
-            throw $e;
-        }
+        $oCart = $this->cartRepository->create($input);
+        return $this->httpOk([
+            'message' => ('Product added to cart successfully'),
+            'data' => [
+                'cart' => new CartResource($oCart),
+            ],
+        ]);
     }
 
     /**
+     * validation for cart store data.
+     *
      * @return array|string[]
      */
     protected function getValidationMethod(): array
@@ -82,6 +78,8 @@ class CartController extends Controller
     }
 
     /**
+     * method for show cart information by id
+     *
      * @param int $id
      *
      * @return JsonResponse
@@ -90,79 +88,65 @@ class CartController extends Controller
     {
         return $this->httpOk([
             'data' => [
-                'carts' => $this->cartRepository->show($id),
+                'carts' => new CartResource(
+                    $this->cartRepository->show($id)
+                ),
             ],
         ]);
     }
 
     /**
-     * @param Request $request
+     * request handle for update cart data.
      *
-     * @return JsonResponse
-     */
-    public function update(Request $request)
-    {
-        $id = $request['id'];
-
-        $productData = Cart::findOrFail($id);
-
-        $productData->name = $request->input('name');
-        $productData->quantity = $request->input('quantity');
-        $productData->product_id = $request->input('product_id');
-        $productData->save();
-
-        return $this->httpOk([
-            'message' => ('Cart Updated successfully'),
-            'data' => [
-                'cart' => $productData,
-            ],
-        ]);
-
-    }
-
-    /**
      * @param Request $request
+     * @param int     $id
      *
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function destroy(Request $request)
+    public function update(Request $request, int $id)
     {
-        $this->validate($request, $this->getValidationProductDelete());
-
-        $input = $request->only('id');
-
-        $this->cartRepository->deleteCart($input);
-
+        $input = $this->validate($request, $this->getValidationUpdateMethod());
         return $this->httpOk([
-            'message' => ('Product has been removed'),
+            'message' => ('cart Updated'),
+            'data' => ['user' => new CartResource(
+                $this->cartRepository->update(
+                    $id,
+                    $input
+                )
+            ),
+            ],
         ]);
-
     }
 
     /**
+     * validation for update cart  data.
+     *
      * @return array|string[]
      */
-    protected function getValidationProductDelete(): array
+    public function getValidationUpdateMethod(): array
     {
         return [
-            'id' => 'required|integer',
+            'name' => 'sometimes|string',
+            'price' => 'sometimes|integer',
+            'description' => 'sometimes|integer',
         ];
     }
 
     /**
-     * @param Request $request
-     * @param Product $product
+     * method for delete cart data
      *
-     * @return Product[]|Collection
+     * @param int $id
+     *
+     * @return JsonResponse
      */
-    public function filter(Request $request, Product $product)
+    public function destroy(int $id)
     {
-        // Search by Product Name
-        if ($request->has('price')) {
-            return $product->where('price', $request->input('price'))->get();
-        }
-
-        return Product::all();
+        $this->cartRepository->deleteCart($id);
+        return $this->httpOk([
+            'message' => ('Product has been removed'),
+            'data' => 'true',
+        ]);
     }
+
 }

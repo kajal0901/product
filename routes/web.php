@@ -58,7 +58,7 @@ $router->group(
         );
         // Update Product
         $router->put(
-            '/products',
+            '/products/{id}',
             [
                 'as' => 'products.update',
                 'uses' => 'ProductController@update',
@@ -67,7 +67,7 @@ $router->group(
 
         // Delete product table data
         $router->delete(
-            '/products',
+            '/products/{id}',
             [
                 'as' => 'products.delete',
                 'uses' => 'ProductController@destroy',
@@ -85,7 +85,7 @@ $router->group(
 
         // search Api by Price
         $router->post(
-            '/carts',
+            '/cart',
             [
                 'as' => 'carts.create',
                 'uses' => 'CartController@store',
@@ -94,7 +94,7 @@ $router->group(
 
         // empty cart
         $router->post(
-            '/carts',
+            '/carts/{id}',
             [
                 'as' => 'carts.empty',
                 'uses' => 'CartController@destroy',
@@ -103,7 +103,7 @@ $router->group(
 
         // Cart  Update
         $router->put(
-            '/carts',
+            '/carts/{id}',
             [
                 'as' => 'carts.update',
                 'uses' => 'CartController@update',
