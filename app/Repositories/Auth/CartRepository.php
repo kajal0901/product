@@ -3,29 +3,31 @@
 namespace App\Repositories\Auth;
 
 use App\Cart;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 
 class CartRepository
 {
     /**
+     * store cart.
+     *
      * @param array $input
      *
      * @return Cart
      */
     public function create(array $input): Cart
     {
-
-        return Cart::create(
-            [
-                'name' => $input['name'],
-                'quantity' => $input['quantity'],
-                'product_id' => $input['product_id'],
-            ]
-        );
+        $cart = new Cart();
+        if ($cart->store($input)->save()) {
+            return $cart;
+        }
     }
 
 
     /**
+     * update cart
+     *
      * @param int   $id
      * @param array $input
      *
@@ -33,13 +35,15 @@ class CartRepository
      */
     public function update(int $id, array $input)
     {
-        $model = $this->show($id);
-        $model->fill($input);
-        $model->save();
-        return $model;
+        $cart = $this->show($id);
+        if ($cart->store($input)->save()) {
+            return $cart;
+        }
     }
 
     /**
+     * search by id
+     *
      * @param int $id
      *
      * @return mixed
@@ -50,6 +54,8 @@ class CartRepository
     }
 
     /**
+     * delete cart
+     *
      * @param int $id
      *
      * @return mixed
@@ -59,4 +65,15 @@ class CartRepository
         return Cart::findOrFail($id)->delete();
     }
 
+    /**
+     * get last deleted record
+     *
+     * @param int $id
+     *
+     * @return Cart[]|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|Collection
+     */
+    public function getDeletedRecord(int $id)
+    {
+        return Cart::withTrashed()->where('id', $id)->get();
+    }
 }

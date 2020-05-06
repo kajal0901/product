@@ -27,19 +27,6 @@ class CartController extends Controller
         $this->cartRepository = $cartRepository;
     }
 
-    /**
-     * method for cart data.
-     *
-     * @return JsonResponse
-     */
-    public function index()
-    {
-        return $this->httpOk([
-            'data' => [
-                'products' => $this->cartRepository->get(),
-            ],
-        ]);
-    }
 
     /**
      * method for store cart data.
@@ -53,7 +40,6 @@ class CartController extends Controller
     public function store(Request $request)
     {
         $input = $this->validate($request, $this->getValidationMethod());
-
         $oCart = $this->cartRepository->create($input);
         return $this->httpOk([
             'message' => ('Product added to cart successfully'),
@@ -145,7 +131,9 @@ class CartController extends Controller
         $this->cartRepository->deleteCart($id);
         return $this->httpOk([
             'message' => ('Product has been removed'),
-            'data' => 'true',
+            'data' => ['cart' =>
+                $this->cartRepository->getDeletedRecord($id),
+            ],
         ]);
     }
 

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
-use App\Product;
 use App\Repositories\Auth\ProductRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +12,6 @@ use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
-
     /**
      * @var ProductRepository
      */
@@ -30,20 +28,37 @@ class ProductController extends Controller
     }
 
     /**
+     * @param Request $request
+     *
      * @return JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        /**
-         * sorting
-         * searching
-         * pagination
-         */
+        $products = $this->productRepository->filter(
+            $request->only(
+                'page',
+                'perPage',
+                'orderBy',
+                'orderByColumn',
+                'filter'
+            )
+        );
         return $this->httpOk([
-            'data' => [
-                'products' => $this->productRepository->getProduct(),
-            ],
+            'data' =>
+                ['pagination' => [
+                    'current_page' => $products->currentPage(),
+                    'from' => $products->firstItem(),
+                    'last_page' => $products->lastPage(),
+                    'per_page' => $products->perPage(),
+                    'to' => $products->lastItem(),
+                    'total' => $products->total(),
+                ],
+                    'products' => ProductResource::collection(
+                        $products
+                    ),
+                ],
         ]);
+
     }
 
     /**
@@ -149,24 +164,10 @@ class ProductController extends Controller
         $this->productRepository->deleteProduct($id);
         return $this->httpOk([
             'message' => ('product deleted successfully'),
-            'data' => 'true',
+            'data' => ['Product' =>
+                $this->productRepository->getDeletedRecord($id),
+            ],
         ]);
     }
 
-
-    /**
-     * Filter method for product field
-     *
-     * @param Request $request
-     *
-     * @return mixed
-     */
-    public function filter(Request $request)
-    {
-        return Product::when($request->has('price'), function ($q) {
-            return $q->where('price', request('price'))->get();
-        })->when($request->has('description'), function ($q) {
-            return $q->where('description', request('description'))->get();
-        });
-    }
 }

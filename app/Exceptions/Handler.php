@@ -56,7 +56,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        dd($exception);
         $errorData = $this->getErrorData($exception);
         return response()->json($errorData, $errorData['code']);
     }

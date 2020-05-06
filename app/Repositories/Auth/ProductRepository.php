@@ -3,47 +3,40 @@
 namespace App\Repositories\Auth;
 
 use App\Product;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 
 class ProductRepository
 {
-
     /**
+     * store product.
+     *
      * @param array $input
      *
      * @return Product
      */
     public function create(array $input): Product
     {
-        return Product::create(
-            [
-                'name' => $input['name'],
-                'price' => $input['price'],
-                'description' => $input['description'],
-            ]
-        );
+        $product = new Product();
+        if ($product->store($input)->save()) {
+            return $product;
+        }
     }
 
     /**
-     * @return JsonResponse
-     */
-    public function getProduct()
-    {
-        return Product::paginate(5);
-    }
-
-    /**
+     * update product.
+     *
      * @param int   $id
      * @param array $input
      *
      * @return JsonResponse
      */
-    public function update(int $id, array $input)
+    public function update(int $id, array $input): JsonResponse
     {
-        $model = $this->show($id);
-        $model->fill($input);
-        $model->save();
-        return $model;
+        $product = $this->show($id);
+        return $product->store($input)->save();
     }
 
     /**
@@ -66,4 +59,33 @@ class ProductRepository
         return Product::findOrFail($id)->delete();
     }
 
+    /**
+     * filter method for product data
+     *
+     * @param array $input
+     *
+     * @return LengthAwarePaginator
+     */
+    public function filter(array $input)
+    {
+        $name = isset($input["filter"]["name"]) ? $input["filter"]["name"] : '';
+        $description = isset($input["filter"]["description"]) ? $input["filter"]["description"] : '';
+        return Product::Where('name', 'like', '%' . $name . '%')
+            ->Where('description', 'like', '%' . $description . '%')
+            ->orderBy($input['orderByColumn'], $input['orderBy'])
+            ->paginate(5);
+
+    }
+
+    /**
+     * deleted record from cart.
+     * method for last deleted record information.
+     * @param int $id
+     *
+     * @return Product[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection
+     */
+    public function getDeletedRecord(int $id)
+    {
+        return Product::withTrashed()->where('id', $id)->get();
+    }
 }

@@ -21,21 +21,29 @@ $router->group(
         'prefix' => 'api',
     ],
     function ($router) {
+        /**
+         * Route Request for register
+         */
         $router->post(
             '/register', [
                 'as' => 'auth.register',
                 'uses' => 'AuthController@register',
             ]
         );
-
+        /**
+         * Route for login
+         */
         $router->post(
             '/login', [
                 'as' => 'auth.login',
                 'uses' => 'AuthController@login',
             ]
         );
+        /**
+         * show product list
+         */
         $router->get(
-            '/products', [
+            '/productsList', [
                 'as' => 'products.index',
                 'uses' => 'ProductController@index',
             ]
@@ -74,16 +82,7 @@ $router->group(
             ]
         );
 
-        // search Api by Price
-        $router->get(
-            '/products',
-            [
-                'as' => 'products.search',
-                'uses' => 'ProductController@filter',
-            ]
-        );
-
-        // search Api by Price
+        //Rote request for create cart
         $router->post(
             '/cart',
             [
@@ -93,7 +92,7 @@ $router->group(
         );
 
         // empty cart
-        $router->post(
+        $router->delete(
             '/carts/{id}',
             [
                 'as' => 'carts.empty',
@@ -110,7 +109,6 @@ $router->group(
             ]
         );
     }
-
 );
 
 
