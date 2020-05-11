@@ -108,6 +108,42 @@ $router->group(
                 'uses' => 'CartController@update',
             ]
         );
+
+        $router->get(
+            '/services', [
+                'as' => 'services.index',
+                'uses' => 'TestController@index',
+            ]
+        );
+
+        $router->get(
+            '/users',[
+                'as'=>'users.index',
+                'uses'=>'AuthController@index'
+            ]
+        );
+
+        /**
+         * User delete Route Request
+         */
+        $router->delete(
+            '/users/{id}',
+            [
+                'as' => 'users.delete',
+                'uses' => 'AuthController@destroy',
+            ]
+        );
+
+        /**
+         * User detail
+         */
+        $router->get(
+            '/users/{id}',
+            [
+                'as' => 'users.delete',
+                'uses' => 'AuthController@findUserById',
+            ]
+        );
     }
 );
 
