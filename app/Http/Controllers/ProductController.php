@@ -9,7 +9,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
-
 class ProductController extends Controller
 {
     /**
@@ -32,33 +31,23 @@ class ProductController extends Controller
      *
      * @return JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $products = $this->productRepository->filter(
-            $request->only(
-                'page',
-                'perPage',
-                'orderBy',
-                'orderByColumn',
-                'filter'
-            )
+            $request->only('page', 'perPage', 'orderBy', 'orderByColumn', 'filter')
         );
         return $this->httpOk([
             'data' =>
-                ['pagination' => [
+                [
                     'current_page' => $products->currentPage(),
                     'from' => $products->firstItem(),
                     'last_page' => $products->lastPage(),
                     'per_page' => $products->perPage(),
                     'to' => $products->lastItem(),
                     'total' => $products->total(),
-                ],
-                    'products' => ProductResource::collection(
-                        $products
-                    ),
+                    'products' => ProductResource::collection($products),
                 ],
         ]);
-
     }
 
     /**
@@ -70,12 +59,12 @@ class ProductController extends Controller
      * @throws ValidationException
      * @throws Exception
      */
-    public function create(Request $request)
+    public function create(Request $request): JsonResponse
     {
         $input = $this->validate($request, $this->getValidationMethod());
         $oProduct = $this->productRepository->create($input);
         return $this->httpOk([
-            'message' => ('Product Added successfully'),
+            'message' => __('message.product_added_successfully'),
             'data' => [
                 'product' => new ProductResource($oProduct),
             ],
@@ -97,13 +86,11 @@ class ProductController extends Controller
     }
 
     /**
-     * method for get product data.
-     *
      * @param int $id
      *
      * @return JsonResponse
      */
-    public function show(int $id)
+    public function show(int $id): JsonResponse
     {
         return $this->httpOk([
             'data' => [
@@ -117,22 +104,19 @@ class ProductController extends Controller
     /**
      * handle request for update product data.
      *
+     *
      * @param Request $request
      * @param int     $id
      *
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): JsonResponse
     {
         $input = $this->validate($request, $this->getUpdateMethodValidation());
         return $this->httpOk([
-            'message' => ('Product Updated'),
-            'data' => ['user' => new ProductResource(
-                $this->productRepository->update(
-                    $id,
-                    $input
-                )
+            'message' => __('message.product_updated'),
+            'data' => ['user' => new ProductResource($this->productRepository->update($id, $input)
             ),
             ],
         ]);
@@ -159,14 +143,12 @@ class ProductController extends Controller
      *
      * @return JsonResponse
      */
-    public function destroy(int $id)
+    public function destroy(int $id): JsonResponse
     {
         $this->productRepository->deleteProduct($id);
         return $this->httpOk([
-            'message' => ('product deleted successfully'),
-            'data' => ['Product' =>
-                $this->productRepository->getDeletedRecord($id),
-            ],
+            'message' => __('message.product_deleted'),
+            'data' => ['product' => $this->productRepository->getDeletedRecord($id)],
         ]);
     }
 

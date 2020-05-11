@@ -5,7 +5,6 @@ namespace App\Repositories\Auth;
 use App\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 
 class ProductRepository
@@ -20,9 +19,8 @@ class ProductRepository
     public function create(array $input): Product
     {
         $product = new Product();
-        if ($product->store($input)->save()) {
-            return $product;
-        }
+        $product->store($input)->save();
+        return $product;
     }
 
     /**
@@ -31,20 +29,21 @@ class ProductRepository
      * @param int   $id
      * @param array $input
      *
-     * @return JsonResponse
+     * @return Product
      */
-    public function update(int $id, array $input): JsonResponse
+    public function update(int $id, array $input): Product
     {
         $product = $this->show($id);
-        return $product->store($input)->save();
+        $product->store($input)->save();
+        return $product;
     }
 
     /**
      * @param int $id
      *
-     * @return JsonResponse
+     * @return Product
      */
-    public function show(int $id)
+    public function show(int $id): Product
     {
         return Product::findOrFail($id);
     }
@@ -66,20 +65,21 @@ class ProductRepository
      *
      * @return LengthAwarePaginator
      */
-    public function filter(array $input)
+    public function filter(array $input): LengthAwarePaginator
     {
         $name = isset($input["filter"]["name"]) ? $input["filter"]["name"] : '';
         $description = isset($input["filter"]["description"]) ? $input["filter"]["description"] : '';
+        $perPage = $input['perPage'] ?? 5;
         return Product::Where('name', 'like', '%' . $name . '%')
             ->Where('description', 'like', '%' . $description . '%')
             ->orderBy($input['orderByColumn'], $input['orderBy'])
-            ->paginate(5);
-
+            ->paginate($perPage);
     }
 
     /**
      * deleted record from cart.
      * method for last deleted record information.
+     *
      * @param int $id
      *
      * @return Product[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection

@@ -43,7 +43,7 @@ $router->group(
          * show product list
          */
         $router->get(
-            '/productsList', [
+            '/products', [
                 'as' => 'products.index',
                 'uses' => 'ProductController@index',
             ]

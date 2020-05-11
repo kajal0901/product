@@ -14,10 +14,10 @@ class Controller extends BaseController
      *
      * @return JsonResponse
      */
-    protected function respondWithToken($token)
+    protected function respondWithToken($token): JsonResponse
     {
         return $this->httpOk([
-            'message' => ('login  successful'),
+            'message' => __('message.login_successful'),
             'data' => [
                 'token' => $token,
                 'token_type' => 'bearer',

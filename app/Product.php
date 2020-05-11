@@ -11,6 +11,11 @@ class Product extends Model
     use SoftDeletes;
 
     /**
+     * @var array
+     */
+    protected $addProduct;
+
+    /**
      * Request mapper for product model.
      */
     public const REQUEST_MAPPER = [
@@ -32,20 +37,18 @@ class Product extends Model
     ];
 
     /**
-     * Database field value
      * @param array $input
-     * @param array $fields
      *
-     * @return $this
+     * @return Product
      */
-    public function store(array $input, array $fields = [])
+    public function store(array $input): Product
     {
         foreach ($input as $inputKey => $inputValue) {
             if (isset(self::REQUEST_MAPPER[$inputKey])) {
-                $fields[self::REQUEST_MAPPER[$inputKey]] = $inputValue;
+                $this->addProduct[self::REQUEST_MAPPER[$inputKey]] = $inputValue;
             }
         }
-        $this->fill($fields);
+        $this->fill($this->addProduct);
         return $this;
     }
 }

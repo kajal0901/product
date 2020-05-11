@@ -19,11 +19,9 @@ class CartRepository
     public function create(array $input): Cart
     {
         $cart = new Cart();
-        if ($cart->store($input)->save()) {
-            return $cart;
-        }
+        $cart->store($input)->save();
+        return $cart;
     }
-
 
     /**
      * update cart
@@ -31,14 +29,13 @@ class CartRepository
      * @param int   $id
      * @param array $input
      *
-     * @return JsonResponse
+     * @return Cart
      */
-    public function update(int $id, array $input)
+    public function update(int $id, array $input): Cart
     {
         $cart = $this->show($id);
-        if ($cart->store($input)->save()) {
-            return $cart;
-        }
+        $cart->store($input)->save();
+        return $cart;
     }
 
     /**
@@ -48,9 +45,9 @@ class CartRepository
      *
      * @return mixed
      */
-    public function show(int $id)
+    public function show(int $id): Cart
     {
-        return $product = Cart::findOrFail($id);
+        return $cart = Cart::findOrFail($id);
     }
 
     /**
@@ -70,7 +67,7 @@ class CartRepository
      *
      * @param int $id
      *
-     * @return Cart[]|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|Collection
+     * @return mixed
      */
     public function getDeletedRecord(int $id)
     {

@@ -34,14 +34,14 @@ class AuthController extends Controller
      * @return JsonResponse
      * @throws Exception
      */
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
         $input = $this->validate($request, [$this->getValidationMethod()]);
 
         $oUser = $this->authRepository->create($input);
 
         return $this->httpOk([
-            'message' => __('Registration Complected'),
+            'message' => __('message.register_complected'),
             'data' => [
                 'user' => new UserResource($oUser),
             ],
@@ -69,12 +69,12 @@ class AuthController extends Controller
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $credentials = $this->validate($request, [$this->getValidationMethodLogin()]);
 
         if (!$token = Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Unauthorized']);
+            return response()->json(['message' => __('message.unauthorized')]);
         }
 
         return $this->respondWithToken($token);

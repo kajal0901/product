@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CartResource;
@@ -27,7 +29,6 @@ class CartController extends Controller
         $this->cartRepository = $cartRepository;
     }
 
-
     /**
      * method for store cart data.
      *
@@ -37,12 +38,12 @@ class CartController extends Controller
      * @throws ValidationException
      * @throws Exception
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $input = $this->validate($request, $this->getValidationMethod());
         $oCart = $this->cartRepository->create($input);
         return $this->httpOk([
-            'message' => ('Product added to cart successfully'),
+            'message' => __('message.product_added_to_cart'),
             'data' => [
                 'cart' => new CartResource($oCart),
             ],
@@ -70,7 +71,7 @@ class CartController extends Controller
      *
      * @return JsonResponse
      */
-    public function show(int $id)
+    public function show(int $id): JsonResponse
     {
         return $this->httpOk([
             'data' => [
@@ -90,17 +91,12 @@ class CartController extends Controller
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): JsonResponse
     {
         $input = $this->validate($request, $this->getValidationUpdateMethod());
         return $this->httpOk([
-            'message' => ('cart Updated'),
-            'data' => ['user' => new CartResource(
-                $this->cartRepository->update(
-                    $id,
-                    $input
-                )
-            ),
+            'message' => __('message.cart_updated'),
+            'data' => ['user' => new CartResource($this->cartRepository->update($id, $input)),
             ],
         ]);
     }
@@ -120,20 +116,16 @@ class CartController extends Controller
     }
 
     /**
-     * method for delete cart data
-     *
      * @param int $id
      *
      * @return JsonResponse
      */
-    public function destroy(int $id)
+    public function destroy(int $id): JsonResponse
     {
         $this->cartRepository->deleteCart($id);
         return $this->httpOk([
-            'message' => ('Product has been removed'),
-            'data' => ['cart' =>
-                $this->cartRepository->getDeletedRecord($id),
-            ],
+            'message' =>__ ('message.product_removed'),
+            'data' => ['cart' => $this->cartRepository->getDeletedRecord($id)],
         ]);
     }
 
