@@ -3,11 +3,9 @@
 namespace App\Repositories\Auth;
 
 use App\Cart;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Collection;
 
-class CartRepository
+
+class CartRepository implements CartInterface
 {
     /**
      * store cart.
@@ -57,7 +55,7 @@ class CartRepository
      *
      * @return mixed
      */
-    public function deleteCart(int $id)
+    public function delete(int $id): Cart
     {
         return Cart::findOrFail($id)->delete();
     }

@@ -122,7 +122,7 @@ class CartController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $this->cartRepository->deleteCart($id);
+        $this->cartRepository->delete($id);
         return $this->httpOk([
             'message' =>__ ('message.product_removed'),
             'data' => ['cart' => $this->cartRepository->getDeletedRecord($id)],

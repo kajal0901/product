@@ -7,7 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 
-class ProductRepository
+class ProductRepository implements ProductInterface
 {
     /**
      * store product.
@@ -51,9 +51,9 @@ class ProductRepository
     /**
      * @param int $id
      *
-     * @return mixed
+     * @return Product
      */
-    public function deleteProduct(int $id)
+    public function delete(int $id): Product
     {
         return Product::findOrFail($id)->delete();
     }

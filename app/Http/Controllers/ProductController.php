@@ -145,7 +145,7 @@ class ProductController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $this->productRepository->deleteProduct($id);
+        $this->productRepository->delete($id);
         return $this->httpOk([
             'message' => __('message.product_deleted'),
             'data' => ['product' => $this->productRepository->getDeletedRecord($id)],

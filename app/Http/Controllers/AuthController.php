@@ -28,7 +28,32 @@ class AuthController extends Controller
     }
 
     /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $users = $this->authRepository->getAll(
+            $request->only('page', 'perPage', 'orderBy', 'orderByColumn')
+        );
+        return $this->httpOk([
+            'data' =>
+                [
+                    'current_page' => $users->currentPage(),
+                    'from' => $users->firstItem(),
+                    'last_page' => $users->lastPage(),
+                    'per_page' => $users->perPage(),
+                    'to' => $users->lastItem(),
+                    'total' => $users->total(),
+                    'products' => UserResource::collection($users),
+                ],
+        ]);
+    }
+
+    /**
      * handle user registration Request.
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -36,7 +61,7 @@ class AuthController extends Controller
      */
     public function register(Request $request): JsonResponse
     {
-        $input = $this->validate($request, [$this->getValidationMethod()]);
+        $input = $this->validate($request, $this->getValidationMethod());
 
         $oUser = $this->authRepository->create($input);
 
@@ -57,13 +82,14 @@ class AuthController extends Controller
     {
         return [
             'name' => 'required|string',
-            'email' => 'required|string|email|unique_encrypted:users,email',
+            'email' => 'required|string|email|unique:users,email',
             'password' => 'required|string|min:8',
         ];
     }
 
     /**
      * login request method
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -71,7 +97,7 @@ class AuthController extends Controller
      */
     public function login(Request $request): JsonResponse
     {
-        $credentials = $this->validate($request, [$this->getValidationMethodLogin()]);
+        $credentials = $this->validate($request, $this->getValidationMethodLogin());
 
         if (!$token = Auth::attempt($credentials)) {
             return response()->json(['message' => __('message.unauthorized')]);
@@ -93,4 +119,34 @@ class AuthController extends Controller
             'password' => 'required|string',
         ];
     }
+
+    /**
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        $this->authRepository->delete($id);
+        return $this->httpOk([
+            'message' => __('message.user_deleted'),
+            'data' => ['status' => 'true'],
+        ]);
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
+    public function findUserById(int $id): JsonResponse
+    {
+        $user = $this->authRepository->find($id);
+        return $this->httpOk([
+            'data' => [
+                'user' => new UserResource($user),
+            ],
+        ]);
+    }
+
 }

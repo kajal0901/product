@@ -9,5 +9,6 @@ return [
     "product_added_to_cart" => "Product added to cart successfully",
     "cart_updated" => "Cart Updated",
     "product_removed" => "Product has been removed",
-    "product_deleted" => "Product deleted successfully"
+    "product_deleted" => "Product deleted successfully",
+    "user_deleted"=>"User Deleted"
 ];
