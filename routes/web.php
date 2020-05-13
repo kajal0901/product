@@ -82,6 +82,16 @@ $router->group(
             ]
         );
 
+        // search Api by Price
+        $router->post(
+            '/products',
+            [
+                'as' => 'curl.index',
+                'uses' => 'DataController@postRequest',
+            ]
+        );
+
+        // search Api by Price
         //Rote request for create cart
         $router->post(
             '/cart',
@@ -108,6 +118,16 @@ $router->group(
                 'uses' => 'CartController@update',
             ]
         );
+
+        // call curl request
+        $router->post(
+            '/curlPost',
+            [
+                'as' => 'curl.postData',
+                'uses' => 'DataController@postRequest',
+            ]
+        );
+    }
 
         $router->get(
             '/services', [
