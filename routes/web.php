@@ -144,6 +144,48 @@ $router->group(
                 'uses' => 'AuthController@findUserById',
             ]
         );
+
+        // Store order
+        $router->post(
+            '/order', [
+                'as' => 'order.store',
+                'uses' => 'OrderController@create',
+            ]
+        );
+
+        // Order detail
+        $router->get(
+            '/order/{id}', [
+                'as' => 'order.show',
+                'uses' => 'OrderController@show',
+            ]
+        );
+
+        // show order list
+        $router->get(
+            '/orders', [
+                'as' => 'order.index',
+                'uses' => 'OrderController@index',
+            ]
+        );
+
+        //order update
+        $router->put(
+            '/order/{id}',
+            [
+                'as' => 'order.update',
+                'uses' => 'OrderController@update',
+            ]
+        );
+
+        //order delete
+        $router->delete(
+            '/order/{id}',
+            [
+                'as' => 'order.delete',
+                'uses' => 'OrderController@destroy',
+            ]
+        );
     }
 );
 

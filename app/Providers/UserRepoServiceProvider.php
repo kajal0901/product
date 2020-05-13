@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Repositories\Auth\AuthRepository;
 use App\Repositories\Auth\CartInterface;
 use App\Repositories\Auth\CartRepository;
+use App\Repositories\Auth\OrderInterface;
+use App\Repositories\Auth\OrderRepository;
 use App\Repositories\Auth\ProductInterface;
 use App\Repositories\Auth\ProductRepository;
 use App\Repositories\Auth\UserInterface;
@@ -42,6 +44,11 @@ class UserRepoServiceProvider extends ServiceProvider
         $this->app->bind(
             CartInterface::class,
             CartRepository::class
+        );
+
+        $this->app->bind(
+            OrderInterface::class,
+            OrderRepository::class
         );
     }
 }

@@ -124,7 +124,7 @@ class CartController extends Controller
     {
         $this->cartRepository->delete($id);
         return $this->httpOk([
-            'message' =>__ ('message.product_removed'),
+            'message' =>__ ('message.cart_deleted'),
             'data' => ['cart' => $this->cartRepository->getDeletedRecord($id)],
         ]);
     }

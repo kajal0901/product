@@ -10,5 +10,9 @@ return [
     "cart_updated" => "Cart Updated",
     "product_removed" => "Product has been removed",
     "product_deleted" => "Product deleted successfully",
-    "user_deleted"=>"User Deleted"
+    "cart_deleted" => "Cart Remove successfully",
+    "user_deleted"=>"User Deleted",
+    "order_placed"=>"Order Placed",
+    "order_updated"=>"order Updated",
+    "order_deleted"=>"Order Deleted"
 ];
