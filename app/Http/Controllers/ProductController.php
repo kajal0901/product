@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogActivity;
 use App\Http\Resources\ProductResource;
 use App\Repositories\Auth\ProductRepository;
 use Exception;
@@ -63,6 +64,7 @@ class ProductController extends Controller
     {
         $input = $this->validate($request, $this->getValidationMethod());
         $oProduct = $this->productRepository->create($input);
+        LogActivity::addToLog('Product store Api.', $request);
         return $this->httpOk([
             'message' => __('message.product_added_successfully'),
             'data' => [
@@ -114,11 +116,10 @@ class ProductController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $input = $this->validate($request, $this->getUpdateMethodValidation());
+        LogActivity::addToLog('Product update Api.', $request);
         return $this->httpOk([
             'message' => __('message.product_updated'),
-            'data' => ['user' => new ProductResource($this->productRepository->update($id, $input)
-            ),
-            ],
+            'data' => ['user' => new ProductResource($this->productRepository->update($id, $input)),],
         ]);
     }
 

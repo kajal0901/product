@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogActivity;
 use App\Http\Resources\UserResource;
 use App\Repositories\Auth\AuthRepository;
 use Exception;
@@ -64,6 +65,8 @@ class AuthController extends Controller
         $input = $this->validate($request, $this->getValidationMethod());
 
         $oUser = $this->authRepository->create($input);
+
+        LogActivity::addToLog('User Registration Api.',$request);
 
         return $this->httpOk([
             'message' => __('message.register_complected'),

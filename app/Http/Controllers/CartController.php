@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogActivity;
 use App\Http\Resources\CartResource;
 use App\Repositories\Auth\CartRepository;
 use Exception;
@@ -42,6 +43,7 @@ class CartController extends Controller
     {
         $input = $this->validate($request, $this->getValidationMethod());
         $oCart = $this->cartRepository->create($input);
+        LogActivity::addToLog('Cart Store Api.',$request);
         return $this->httpOk([
             'message' => __('message.product_added_to_cart'),
             'data' => [
@@ -94,6 +96,9 @@ class CartController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $input = $this->validate($request, $this->getValidationUpdateMethod());
+
+        LogActivity::addToLog('Cart Update Api.',$request);
+
         return $this->httpOk([
             'message' => __('message.cart_updated'),
             'data' => ['user' => new CartResource($this->cartRepository->update($id, $input)),

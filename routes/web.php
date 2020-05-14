@@ -18,7 +18,7 @@ $router->get('/', function () use ($router) {
 
 $router->group(
     [
-        'prefix' => 'api',
+        'prefix' => 'api'
     ],
     function ($router) {
         /**
@@ -39,6 +39,15 @@ $router->group(
                 'uses' => 'AuthController@login',
             ]
         );
+    }
+);
+
+$router->group(
+    [
+        'prefix' => 'api',
+        'middleware'=>'auth'
+    ],
+    function ($router) {
         /**
          * show product list
          */
@@ -109,7 +118,7 @@ $router->group(
             ]
         );
 
-        // call curl request
+            // call curl request
         $router->post(
             '/curlPost',
             [
@@ -132,9 +141,9 @@ $router->group(
          * user list
          */
         $router->get(
-            '/users',[
-                'as'=>'users.index',
-                'uses'=>'AuthController@index'
+            '/users', [
+                'as' => 'users.index',
+                'uses' => 'AuthController@index',
             ]
         );
 
@@ -160,7 +169,7 @@ $router->group(
             ]
         );
 
-        // Store order
+      // Store order
         $router->post(
             '/order', [
                 'as' => 'order.store',
@@ -168,7 +177,7 @@ $router->group(
             ]
         );
 
-        // Order detail
+       // Order detail
         $router->get(
             '/order/{id}', [
                 'as' => 'order.show',
@@ -201,8 +210,7 @@ $router->group(
                 'uses' => 'OrderController@destroy',
             ]
         );
+
     }
 );
-
-
 
