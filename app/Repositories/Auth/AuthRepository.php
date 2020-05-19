@@ -24,7 +24,7 @@ class AuthRepository implements UserInterface
      */
     public function create(array $input): User
     {
-        return User::create(
+        $oUser =  User::create(
             [
                 'name' => $input['name'],
                 'email' => $input['email'],
@@ -32,6 +32,9 @@ class AuthRepository implements UserInterface
             ]
         );
 
+        $this->assignRole($oUser, config('app.DEFAULT_USER_ROLE'));
+
+        return $oUser;
     }
 
     /**
@@ -68,5 +71,16 @@ class AuthRepository implements UserInterface
     public function delete(int $id): bool
     {
        return  User::findOrFail($id)->delete();
+    }
+
+    /**
+     * @param User   $user
+     * @param string $role
+     *
+     * @return User
+     */
+    public function assignRole(User $user, string $role): User
+    {
+        return $user->assignRole($role);
     }
 }
