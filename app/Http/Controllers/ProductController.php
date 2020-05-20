@@ -24,7 +24,6 @@ class ProductController extends Controller
      */
     public function __construct(ProductRepository $productRepository)
     {
-        $this->middleware('permission:product-create', ['only' => ['create']]);
         $this->productRepository = $productRepository;
     }
 
