@@ -7,12 +7,26 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class OrderRepository implements OrderInterface
 {
+
     /**
-     * store cart.
+     * @var
+     */
+    protected $model;
+
+    /**
+     * OrderRepository constructor.
      *
-     * @param array $input
-     *
-     * @return Order
+     * @param Order $model
+     */
+    public function __construct(
+        Order $model
+    )
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function create(array $input): Order
     {
@@ -22,12 +36,7 @@ class OrderRepository implements OrderInterface
     }
 
     /**
-     * update cart
-     *
-     * @param int   $id
-     * @param array $input
-     *
-     * @return Order
+     * {@inheritDoc}
      */
     public function update(int $id, array $input): Order
     {
@@ -37,11 +46,7 @@ class OrderRepository implements OrderInterface
     }
 
     /**
-     * search by id
-     *
-     * @param int $id
-     *
-     * @return mixed
+     * {@inheritDoc}
      */
     public function show(int $id): Order
     {
@@ -49,11 +54,7 @@ class OrderRepository implements OrderInterface
     }
 
     /**
-     * delete cart
-     *
-     * @param int $id
-     *
-     * @return bool
+     * {@inheritDoc}
      */
     public function delete(int $id): bool
     {
@@ -61,18 +62,14 @@ class OrderRepository implements OrderInterface
     }
 
     /**
-     * @param array $input
-     *
-     * @return LengthAwarePaginator
+     * {@inheritDoc}
      */
     public function filter(array $input): LengthAwarePaginator
     {
-        $status = isset($input["filter"]["status"]) ? $input["filter"]["status"] : '';
-        $name = isset($input["filter"]["name"]) ? $input["filter"]["name"] : '';
         $perPage = $input['perPage'] ?? 5;
-        return Order::Where('status', 'like', '%' . $status . '%')
-            ->Where('name', 'like', '%' . $name . '%')
-            ->orderBy($input['orderByColumn'], $input['orderBy'])
+        return $this->model->query()
+            ->applyFilter($input)
+            ->applySort($input)
             ->paginate($perPage);
     }
 

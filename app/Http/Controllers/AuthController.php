@@ -36,7 +36,12 @@ class AuthController extends Controller
     public function index(Request $request): JsonResponse
     {
         $users = $this->authRepository->getAll(
-            $request->only('page', 'perPage', 'orderBy', 'orderByColumn')
+            $request->only(
+                'page',
+                'perPage',
+                'orderBy',
+                'orderByColumn',
+                'filter')
         );
         return $this->httpOk([
             'data' =>
@@ -66,7 +71,7 @@ class AuthController extends Controller
 
         $oUser = $this->authRepository->create($input);
 
-        LogActivity::addToLog('User Registration Api.',$request);
+        LogActivity::addToLog('User Registration Api.', $request);
 
         return $this->httpOk([
             'message' => __('message.register_complected'),
@@ -133,7 +138,7 @@ class AuthController extends Controller
         $this->authRepository->delete($id);
         return $this->httpOk([
             'message' => __('message.user_deleted'),
-            'data' => ['status' => 'true'],
+            'data' => ['status' => true],
         ]);
     }
 

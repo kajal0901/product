@@ -27,6 +27,7 @@ class OrderController extends Controller
 
     /**
      * show order list
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -34,7 +35,11 @@ class OrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $products = $this->orderRepository->filter(
-            $request->only('page', 'perPage', 'orderBy', 'orderByColumn', 'filter')
+            $request->only('page',
+                'perPage',
+                'orderBy',
+                'orderByColumn',
+                'filter')
         );
         return $this->httpOk([
             'data' =>
@@ -52,6 +57,7 @@ class OrderController extends Controller
 
     /**
      * store order
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -74,6 +80,7 @@ class OrderController extends Controller
 
     /**
      * validation for store order
+     *
      * @return array
      */
     protected function getValidationMethod(): array
@@ -91,6 +98,7 @@ class OrderController extends Controller
 
     /**
      * show order by id
+     *
      * @param int $id
      *
      * @return JsonResponse
@@ -108,6 +116,7 @@ class OrderController extends Controller
 
     /**
      * update order method
+     *
      * @param Request $request
      * @param int     $id
      *
@@ -119,7 +128,11 @@ class OrderController extends Controller
         $input = $this->validate($request, $this->getUpdateMethodValidation());
         return $this->httpOk([
             'message' => __('message.order_updated'),
-            'data' => ['user' => new OrderResource($this->orderRepository->update($id, $input)),],
+            'data' =>
+                ['user' =>
+                    new OrderResource(
+                        $this->orderRepository->update($id, $input))
+                ,],
         ]);
     }
 
@@ -144,6 +157,7 @@ class OrderController extends Controller
 
     /**
      * method for delete product
+     *
      * @param int $id
      *
      * @return JsonResponse
@@ -153,7 +167,7 @@ class OrderController extends Controller
         $this->orderRepository->delete($id);
         return $this->httpOk([
             'message' => __('message.order_deleted'),
-            'data' => ['status' => 'true'],
+            'data' => ['status' => true],
         ]);
     }
 

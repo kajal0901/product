@@ -9,12 +9,26 @@ use Illuminate\Support\Collection;
 
 class ProductRepository implements ProductInterface
 {
+
     /**
-     * store product.
+     * @var
+     */
+    protected $model;
+
+    /**
+     * ProductRepository constructor.
      *
-     * @param array $input
-     *
-     * @return Product
+     * @param Product $model
+     */
+    public function __construct(
+        Product $model
+    )
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function create(array $input): Product
     {
@@ -24,12 +38,7 @@ class ProductRepository implements ProductInterface
     }
 
     /**
-     * update product.
-     *
-     * @param int   $id
-     * @param array $input
-     *
-     * @return Product
+     * {@inheritDoc}
      */
     public function update(int $id, array $input): Product
     {
@@ -39,9 +48,7 @@ class ProductRepository implements ProductInterface
     }
 
     /**
-     * @param int $id
-     *
-     * @return Product
+     * {@inheritDoc}
      */
     public function show(int $id): Product
     {
@@ -49,9 +56,7 @@ class ProductRepository implements ProductInterface
     }
 
     /**
-     * @param int $id
-     *
-     * @return Product
+     * {@inheritDoc}
      */
     public function delete(int $id): Product
     {
@@ -59,20 +64,14 @@ class ProductRepository implements ProductInterface
     }
 
     /**
-     * filter method for product data
-     *
-     * @param array $input
-     *
-     * @return LengthAwarePaginator
+     * {@inheritDoc}
      */
     public function filter(array $input): LengthAwarePaginator
     {
-        $name = isset($input["filter"]["name"]) ? $input["filter"]["name"] : '';
-        $description = isset($input["filter"]["description"]) ? $input["filter"]["description"] : '';
         $perPage = $input['perPage'] ?? 5;
-        return Product::Where('name', 'like', '%' . $name . '%')
-            ->Where('description', 'like', '%' . $description . '%')
-            ->orderBy($input['orderByColumn'], $input['orderBy'])
+        return $this->model->query()
+            ->applyFilter($input)
+            ->applySort($input)
             ->paginate($perPage);
     }
 

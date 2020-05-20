@@ -2,9 +2,11 @@
 
 namespace App;
 
+use App\Traits\SearchAndSort;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Lumen\Auth\Authorizable;
@@ -13,8 +15,25 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 {
-    use Authenticatable, Authorizable, SoftDeletes,HasRoles;
+    use Authenticatable, Authorizable, SoftDeletes, HasRoles, SearchAndSort;
 
+    /**
+     * $columns
+     *
+     * @var array
+     */
+    public static $columns = [
+        'name' => [
+            'table_field' => 'name',
+            'sortable' => true,
+            'searchable' => true,
+        ],
+        'email' => [
+            'table_field' => 'email',
+            'sortable' => true,
+            'searchable' => true,
+        ],
+    ];
     /**
      * The attributes that are mass assignable.
      *
@@ -23,7 +42,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $fillable = [
         'name', 'email', 'password',
     ];
-
     /**
      * The attributes excluded from the model's JSON form.
      *
@@ -32,6 +50,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $hidden = [
         'password',
     ];
+
+    /**
+     * @return Builder
+     */
+    public static function query(): Builder
+    {
+        return parent::query();
+    }
 
     /**
      * @return mixed

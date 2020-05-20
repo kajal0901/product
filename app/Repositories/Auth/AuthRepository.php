@@ -4,18 +4,28 @@ namespace App\Repositories\Auth;
 
 use App\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 
 
 class AuthRepository implements UserInterface
 {
 
-
     /**
-     * @var Model
+     * @var
      */
     protected $model;
+
+    /**
+     * ProductRepository constructor.
+     *
+     * @param User $model
+     */
+    public function __construct(
+        User $model
+    )
+    {
+        $this->model = $model;
+    }
 
     /**
      * @param array $input
@@ -24,7 +34,7 @@ class AuthRepository implements UserInterface
      */
     public function create(array $input): User
     {
-        $oUser =  User::create(
+        $oUser = User::create(
             [
                 'name' => $input['name'],
                 'email' => $input['email'],
@@ -35,6 +45,17 @@ class AuthRepository implements UserInterface
         $this->assignRole($oUser, config('app.DEFAULT_USER_ROLE'));
 
         return $oUser;
+    }
+
+    /**
+     * @param User   $user
+     * @param string $role
+     *
+     * @return User
+     */
+    public function assignRole(User $user, string $role): User
+    {
+        return $user->assignRole($role);
     }
 
     /**
@@ -54,12 +75,10 @@ class AuthRepository implements UserInterface
      */
     public function getAll(array $input): LengthAwarePaginator
     {
-        $name = isset($input["filter"]["name"]) ? $input["filter"]["name"] : '';
-        $email = isset($input["filter"]["email"]) ? $input["filter"]["email"] : '';
         $perPage = $input['perPage'] ?? 5;
-        return User::Where('name', 'like', '%' . $name . '%')
-            ->Where('email', 'like', '%' . $email . '%')
-            ->orderBy($input['orderByColumn'], $input['orderBy'])
+        return $this->model->query()
+            ->applyFilter($input)
+            ->applySort($input)
             ->paginate($perPage);
     }
 
@@ -70,17 +89,6 @@ class AuthRepository implements UserInterface
      */
     public function delete(int $id): bool
     {
-       return  User::findOrFail($id)->delete();
-    }
-
-    /**
-     * @param User   $user
-     * @param string $role
-     *
-     * @return User
-     */
-    public function assignRole(User $user, string $role): User
-    {
-        return $user->assignRole($role);
+        return User::findOrFail($id)->delete();
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App;
 
+use App\Traits\SearchAndSort;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
-
-    use SoftDeletes;
+    use SearchAndSort,SoftDeletes;
 
     /**
      * @var
@@ -29,6 +30,24 @@ class Order extends Model
     ];
 
     /**
+     * $columns
+     *
+     * @var array
+     */
+    public static $columns = [
+        'status' => [
+            'table_field' => 'status',
+            'sortable' => true,
+            'searchable' => true,
+        ],
+        'name' => [
+            'table_field' => 'name',
+            'sortable' => true,
+            'searchable' => true,
+        ]
+    ];
+
+    /**
      * @var string
      */
     protected $table = 'orders';
@@ -36,7 +55,7 @@ class Order extends Model
     /**
      * @var string
      */
-    protected $primaryKey = 'p_id';
+    protected $primaryKey = 'o_id';
     /**
      * The attributes that are mass assignable.
      *
@@ -66,5 +85,13 @@ class Order extends Model
         }
         $this->fill($this->addOrder);
         return $this;
+    }
+
+    /**
+     * @return Builder
+     */
+    public static function query(): Builder
+    {
+        return parent::query();
     }
 }

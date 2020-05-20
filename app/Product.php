@@ -2,13 +2,15 @@
 
 namespace App;
 
+use App\Traits\SearchAndSort;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
 
-    use SoftDeletes;
+    use SearchAndSort,SoftDeletes;
 
     /**
      * @var array
@@ -23,6 +25,25 @@ class Product extends Model
         'price' => 'price',
         'description' => 'description',
     ];
+
+    /**
+     * $columns
+     *
+     * @var array
+     */
+    public static $columns = [
+        'name' => [
+            'table_field' => 'name',
+            'sortable' => true,
+            'searchable' => true,
+        ],
+        'description' => [
+            'table_field' => 'description',
+            'sortable' => true,
+            'searchable' => true,
+        ]
+    ];
+
     /**
      * @var string
      */
@@ -50,5 +71,13 @@ class Product extends Model
         }
         $this->fill($this->addProduct);
         return $this;
+    }
+
+    /**
+     * @return Builder
+     */
+    public static function query(): Builder
+    {
+        return parent::query();
     }
 }

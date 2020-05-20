@@ -24,8 +24,8 @@ class ProductController extends Controller
      */
     public function __construct(ProductRepository $productRepository)
     {
+        $this->middleware('permission:product-create', ['only' => ['create']]);
         $this->productRepository = $productRepository;
-        $this->middleware('permission:product-create', ['only' => ['create','store']]);
     }
 
     /**
@@ -36,7 +36,12 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         $products = $this->productRepository->filter(
-            $request->only('page', 'perPage', 'orderBy', 'orderByColumn', 'filter')
+            $request->only(
+                'page',
+                'perPage',
+                'orderBy',
+                'orderByColumn',
+                'filter')
         );
         return $this->httpOk([
             'data' =>
@@ -64,8 +69,11 @@ class ProductController extends Controller
     public function create(Request $request): JsonResponse
     {
         $input = $this->validate($request, $this->getValidationMethod());
+
         $oProduct = $this->productRepository->create($input);
+
         LogActivity::addToLog('Product store Api.', $request);
+
         return $this->httpOk([
             'message' => __('message.product_added_successfully'),
             'data' => [
@@ -117,10 +125,17 @@ class ProductController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $input = $this->validate($request, $this->getUpdateMethodValidation());
+
         LogActivity::addToLog('Product update Api.', $request);
+
         return $this->httpOk([
             'message' => __('message.product_updated'),
-            'data' => ['user' => new ProductResource($this->productRepository->update($id, $input)),],
+            'data' =>
+                ['user' =>
+                    new ProductResource
+                    ($this->productRepository
+                        ->update($id, $input))
+                    ,],
         ]);
     }
 
