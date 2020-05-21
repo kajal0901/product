@@ -33,8 +33,8 @@ interface CartInterface
     /**
      * @param int $id
      *
-     * @return Cart
+     * @return bool
      */
-    public function delete(int $id): Cart;
+    public function delete(int $id): bool;
 
 }

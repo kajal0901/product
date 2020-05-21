@@ -87,6 +87,7 @@ $app->configure('auth');
      'auth' => App\Http\Middleware\Authenticate::class,
      'permission' => Spatie\Permission\Middlewares\PermissionMiddleware::class,
      'role' => Spatie\Permission\Middlewares\RoleMiddleware::class,
+     'logfile' => App\Http\Middleware\LogMiddleware::class,
  ]);
 
 /*

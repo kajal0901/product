@@ -8,11 +8,7 @@ use App\Cart;
 class CartRepository implements CartInterface
 {
     /**
-     * store cart.
-     *
-     * @param array $input
-     *
-     * @return Cart
+     * {@inheritDoc}
      */
     public function create(array $input): Cart
     {
@@ -22,12 +18,7 @@ class CartRepository implements CartInterface
     }
 
     /**
-     * update cart
-     *
-     * @param int   $id
-     * @param array $input
-     *
-     * @return Cart
+     * {@inheritDoc}
      */
     public function update(int $id, array $input): Cart
     {
@@ -37,11 +28,7 @@ class CartRepository implements CartInterface
     }
 
     /**
-     * search by id
-     *
-     * @param int $id
-     *
-     * @return mixed
+     * {@inheritDoc}
      */
     public function show(int $id): Cart
     {
@@ -49,13 +36,9 @@ class CartRepository implements CartInterface
     }
 
     /**
-     * delete cart
-     *
-     * @param int $id
-     *
-     * @return mixed
+     * {@inheritDoc}
      */
-    public function delete(int $id): Cart
+    public function delete(int $id): bool
     {
         return Cart::findOrFail($id)->delete();
     }

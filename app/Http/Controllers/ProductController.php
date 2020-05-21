@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\LogActivity;
 use App\Http\Resources\ProductResource;
 use App\Repositories\Auth\ProductRepository;
 use Exception;
@@ -24,10 +23,13 @@ class ProductController extends Controller
      */
     public function __construct(ProductRepository $productRepository)
     {
+        $this->middleware('permission:product-create', ['only' => ['create']]);
+        $this->middleware('permission:product-delete', ['only' => ['destroy']]);
         $this->productRepository = $productRepository;
     }
 
-    /**
+    /**y
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -70,8 +72,6 @@ class ProductController extends Controller
         $input = $this->validate($request, $this->getValidationMethod());
 
         $oProduct = $this->productRepository->create($input);
-
-        LogActivity::addToLog('Product store Api.', $request);
 
         return $this->httpOk([
             'message' => __('message.product_added_successfully'),
@@ -125,8 +125,6 @@ class ProductController extends Controller
     {
         $input = $this->validate($request, $this->getUpdateMethodValidation());
 
-        LogActivity::addToLog('Product update Api.', $request);
-
         return $this->httpOk([
             'message' => __('message.product_updated'),
             'data' =>
@@ -162,9 +160,10 @@ class ProductController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $this->productRepository->delete($id);
+
         return $this->httpOk([
             'message' => __('message.product_deleted'),
-            'data' => ['product' => $this->productRepository->getDeletedRecord($id)],
+            'data' => ['status' => true],
         ]);
     }
 

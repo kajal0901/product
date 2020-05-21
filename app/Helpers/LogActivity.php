@@ -15,12 +15,12 @@ class LogActivity
      */
     public static function addToLog(string $message, Request $request)
     {
-        $log = [];
-        $log['subject'] = $message;
-        $log['url'] = $request->fullUrl();
-        $log['method'] = $request->method();
-        $log['ip'] = $request->ip();
-        $log['user_id'] = Auth::id();
-        LogActivityModel::create($log);
+//        $log = [];
+//        $log['subject'] = $message;
+//        $log['url'] = $request->fullUrl();
+//        $log['method'] = $request->method();
+//        $log['ip'] = $request->ip();
+//        $log['user_id'] = Auth::id();
+//        LogActivityModel::create($log);
     }
 }

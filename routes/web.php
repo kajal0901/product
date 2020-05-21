@@ -45,7 +45,7 @@ $router->group(
 $router->group(
     [
         'prefix' => 'api',
-        'middleware'=>'auth'
+        'middleware'=>['auth', 'logfile'],
     ],
     function ($router) {
         /**

@@ -41,6 +41,7 @@ class OrderController extends Controller
                 'orderByColumn',
                 'filter')
         );
+
         return $this->httpOk([
             'data' =>
                 [
@@ -66,6 +67,7 @@ class OrderController extends Controller
     public function create(Request $request): JsonResponse
     {
         $input = $this->validate($request, $this->getValidationMethod());
+
         $order = $this->orderRepository->create($input);
 
         return $this->httpOk([
@@ -165,6 +167,7 @@ class OrderController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $this->orderRepository->delete($id);
+
         return $this->httpOk([
             'message' => __('message.order_deleted'),
             'data' => ['status' => true],

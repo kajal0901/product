@@ -40,8 +40,8 @@ interface ProductInterface
     /**
      * @param int $id
      *
-     * @return Product
+     * @return bool
      */
-    public function delete(int $id): Product;
+    public function delete(int $id): bool;
 
 }

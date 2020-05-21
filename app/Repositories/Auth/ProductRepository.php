@@ -58,7 +58,7 @@ class ProductRepository implements ProductInterface
     /**
      * {@inheritDoc}
      */
-    public function delete(int $id): Product
+    public function delete(int $id): bool
     {
         return Product::findOrFail($id)->delete();
     }
@@ -75,16 +75,4 @@ class ProductRepository implements ProductInterface
             ->paginate($perPage);
     }
 
-    /**
-     * deleted record from cart.
-     * method for last deleted record information.
-     *
-     * @param int $id
-     *
-     * @return Product[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection
-     */
-    public function getDeletedRecord(int $id)
-    {
-        return Product::withTrashed()->where('id', $id)->get();
-    }
 }
